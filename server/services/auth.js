@@ -31,7 +31,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, (email, password, don
     if (err) { return done(err); }
     if (!user) { return done(null, false, 'Invalid Credentials'); }
     user.comparePassword(password, (error, isMatch) => {
-      if (error) { return done(err); }
+      if (error) { return done(error); }
       if (isMatch) {
         return done(null, user);
       }

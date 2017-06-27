@@ -1,17 +1,18 @@
 const express = require('express');
-const session = require('express-session');
+const models = require('./models');
 const expressGraphQL = require('express-graphql');
 const mongoose = require('mongoose');
-const MongoStore = require('connect-mongo')(session);
+const session = require('express-session');
 const passport = require('passport');
-
 const passportConfig = require('./services/auth');
-const models = require('./models');
+const MongoStore = require('connect-mongo')(session);
 const schema = require('./schema/schema');
-const DB_URI = require('./config');
+
+const DB_URI = require('./config.js');
 
 // Create a new Express application
 const app = express();
+const Console = console;
 
 // Replace with your mongoLab URI
 const MONGO_URI = DB_URI;
@@ -23,8 +24,8 @@ mongoose.Promise = global.Promise;
 // on success or failure
 mongoose.connect(MONGO_URI);
 mongoose.connection
-    .once('open', () => console.log('Connected to MongoLab instance.'))
-    .on('error', error => console.log('Error connecting to MongoLab:', error));
+    .once('open', () => Console.log('Connected to MongoLab instance.'))
+    .on('error', error => Console.log('Error connecting to MongoLab:', error));
 
 // Configures express to use sessions.  This places an encrypted identifier
 // on the users cookie.  When a user makes a request, this middleware examines
