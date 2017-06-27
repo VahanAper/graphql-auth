@@ -1,18 +1,20 @@
 const express = require('express');
-const models = require('./models');
+const session = require('express-session');
 const expressGraphQL = require('express-graphql');
 const mongoose = require('mongoose');
-const session = require('express-session');
-const passport = require('passport');
-const passportConfig = require('./services/auth');
 const MongoStore = require('connect-mongo')(session);
+const passport = require('passport');
+
+const passportConfig = require('./services/auth');
+const models = require('./models');
 const schema = require('./schema/schema');
+const DB_URI = require('./config');
 
 // Create a new Express application
 const app = express();
 
 // Replace with your mongoLab URI
-const MONGO_URI = '';
+const MONGO_URI = DB_URI;
 
 // Mongoose's built in promise library is deprecated, replace it with ES2015 Promise
 mongoose.Promise = global.Promise;
@@ -35,8 +37,8 @@ app.use(session({
   secret: 'aaabbbccc',
   store: new MongoStore({
     url: MONGO_URI,
-    autoReconnect: true
-  })
+    autoReconnect: true,
+  }),
 }));
 
 // Passport is wired into express as a middleware. When a request comes in,
@@ -49,7 +51,7 @@ app.use(passport.session());
 // to the GraphQL instance.
 app.use('/graphql', expressGraphQL({
   schema,
-  graphiql: true
+  graphiql: true,
 }));
 
 // Webpack runs as a middleware.  If any request comes in for the root route ('/')
@@ -58,6 +60,7 @@ app.use('/graphql', expressGraphQL({
 const webpackMiddleware = require('webpack-dev-middleware');
 const webpack = require('webpack');
 const webpackConfig = require('../webpack.config.js');
+
 app.use(webpackMiddleware(webpack(webpackConfig)));
 
 module.exports = app;
