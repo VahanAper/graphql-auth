@@ -8,12 +8,18 @@ class SignupForm extends Component {
   constructor(props) {
     super(props);
 
+    this.state = { errors: [] };
+
     this.onSubmit = this.onSubmit.bind(this);
   }
 
   onSubmit({ email, password }) {
     this.props.mutate({
       variables: { email, password },
+    }).catch((err) => {
+      const errors = err.graphQLErrors.map(error => error.message);
+
+      this.setState({ errors });
     });
   }
 
@@ -22,7 +28,7 @@ class SignupForm extends Component {
       <div>
         <h3>SignUp</h3>
         <AuthForm
-          errors={[]}
+          errors={this.state.errors}
           onSubmit={this.onSubmit}
         />
       </div>
