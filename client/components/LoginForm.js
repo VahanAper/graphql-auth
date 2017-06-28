@@ -9,6 +9,8 @@ class LoginForm extends Component {
   constructor(props) {
     super(props);
 
+    this.state = { errors: [] };
+
     this.onSubmit = this.onSubmit.bind(this);
   }
 
@@ -16,6 +18,12 @@ class LoginForm extends Component {
     this.props.mutate({
       variables: { email, password },
       refetchQueries: [{ query }],
+    }).catch((err) => {
+      const errors = err.graphQLErrors.map(
+        error => error.message,
+      );
+
+      this.setState({ errors });
     });
   }
 
@@ -23,7 +31,10 @@ class LoginForm extends Component {
     return (
       <div>
         <h3>LogIn</h3>
-        <AuthForm onSubmit={this.onSubmit} />
+        <AuthForm
+          onSubmit={this.onSubmit}
+          errors={this.state.errors}
+        />
       </div>
     );
   }
